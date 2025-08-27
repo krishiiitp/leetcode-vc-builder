@@ -1,0 +1,74 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE / Editors
+.vscode/
+.idea/
+*.iml
+
+# Byte-compiled / packages
+*.dll
+*.o
+*.a
+*.out
+*.class
+
+# Distribution / Packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+.manifest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs & databases
+*.log
+*.sqlite3
+*.db
+*.sqlite
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# FastAPI / Uvicorn specific
+*.pid
+
+# Test / Coverage
+.cache/
+.nox/
+.tox/
+.mypy_cache/
+.pyre/
+.pytype/
+
+# Local secrets
+*.env.local
+*.secret
