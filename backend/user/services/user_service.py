@@ -6,16 +6,6 @@ from user.schemas.user import UserCreate
 from sqlalchemy.exc import IntegrityError
 
 
-def get_user_by_email(db: Session, email: str):
-    user = db.query(User).filter(User.email == email).first()
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User with email '{email}' not found"
-        )
-    return user
-
-
 def get_user_by_username(db: Session, username: str):
     user = db.query(User).filter(User.username == username).first()
     if not user:
@@ -27,13 +17,6 @@ def get_user_by_username(db: Session, username: str):
 
 
 def create_user(db: Session, user: UserCreate):
-    existing_email = db.query(User).filter(User.email == user.email).first()
-    if existing_email:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"user with email: {user.email} already exists!",
-        )
-
     existing_username = db.query(User).filter(User.username == user.username).first()
     if existing_username:
         raise HTTPException(
@@ -42,7 +25,6 @@ def create_user(db: Session, user: UserCreate):
         )
 
     db_user = User(
-        email=str(user.email),
         username=user.username,
         password=get_password_hash(user.password)
     )
@@ -55,7 +37,7 @@ def create_user(db: Session, user: UserCreate):
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="user with given email or username already exists!",
+            detail="user with given username already exists!",
         )
 
     return db_user
