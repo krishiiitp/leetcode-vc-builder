@@ -74,7 +74,9 @@ export default function SignupPage() {
       }
 
       const newUuid = crypto.randomUUID();
-      setUuid(newUuid);
+      let finalUuid = "a" + newUuid;
+      finalUuid = finalUuid.substring(0, 30);
+      setUuid(finalUuid);
       setIsVerifying(true);
     } catch (err) {
       setError("An unexpected error occurred. Please try again later.");
@@ -85,14 +87,38 @@ export default function SignupPage() {
 
   const handleVerify = async () => {
     if (timer > 0) {
-      const leetcodeRes = await fetch(
-        `https://alfa-leetcode-api.onrender.com/${username}`
-      );
-      console.log(leetcodeRes)
-      setShowSuccess(true);
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 2000);
+      try {
+        const leetcodeRes = await fetch(
+          `https://alfa-leetcode-api.onrender.com/${username}`
+        );
+        const data = await leetcodeRes.json();
+        console.log(data.name)
+        console.log(uuid)
+
+        if (data.name === uuid) {
+          const res = await fetch("http://localhost:8000/api/users", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+          });
+
+          if (res.ok) {
+            setShowSuccess(true);
+            setTimeout(() => {
+              window.location.href = "/login";
+            }, 2000);
+          } else {
+            setError("Signup failed. Please try again.");
+          }
+        } else {
+          setError("UUID verification failed. Please try again.");
+        }
+      } catch (err) {
+        console.error(err);
+        setError("An unexpected error occurred. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
     } else {
       handleVerificationTimeout();
     }
@@ -120,10 +146,15 @@ export default function SignupPage() {
             <h2 className="text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
               Verify your LeetCode profile
             </h2>
-            <p className="mb-4 text-gray-300">
-              Please copy the UUID below and add it to your LeetCode profile's
-              "About Me" section to verify your account.
-            </p>
+            <p className="font-semibold text-white mb-2">Follow these steps to verify your account:</p>
+            <ol className="list-decimal list-inside space-y-1 text-gray-300">
+              <li>Login to <span className="font-medium text-white">LeetCode</span></li>
+              <li>Click on your <span className="font-medium">User Profile Icon</span></li>
+              <li>Go to <span className="font-medium">Settings</span> → <span className="font-medium">Basic Info</span></li>
+              <li>Click <span className="font-medium">Edit Name</span></li>
+              <li>Add the <span className="text-indigo-400 font-mono">UUID shown below</span></li>
+              <li>Complete this within <span className="text-red-400 font-semibold">60 seconds</span></li>
+            </ol>
             <div className="flex items-center justify-between p-4 bg-gray-800 rounded-lg border border-gray-700 mb-6">
               <span className="truncate flex-1 text-sm font-mono text-gray-200">
                 {uuid}
